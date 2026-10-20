@@ -49,4 +49,22 @@ resource "aws_s3_bucket_versioning" "secure_bucket" {
   versioning_configuration {
     status = "Enabled"
   }
-} 
+}
+resource "aws_s3_bucket_lifecycle_configuration" "secure_bucket" {
+  bucket = aws_s3_bucket.secure_bucket.id
+
+  rule {
+    id     = "expire-old-object-versions"
+    status = "Enabled"
+
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+
+  depends_on = [
+    aws_s3_bucket_versioning.secure_bucket
+  ]
+}
